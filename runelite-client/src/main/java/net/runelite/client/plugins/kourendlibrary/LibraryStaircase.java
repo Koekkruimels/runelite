@@ -31,7 +31,7 @@ import net.runelite.api.coords.WorldPoint;
 import javax.annotation.Nonnull;
 
 @Slf4j
-public enum LibraryStaircase
+enum LibraryStaircase
 {
 	SOUTH_WEST_0_1(new WorldPoint(1615, 3795, 0), LibrarySection.SOUTH_WEST, LibraryLevel.GROUND_FLOOR, LibraryLevel.MIDDLE_FLOOR),
 	SOUTH_WEST_1_0(new WorldPoint(1612, 3795, 1), LibrarySection.SOUTH_WEST, LibraryLevel.MIDDLE_FLOOR, LibraryLevel.GROUND_FLOOR),
@@ -68,7 +68,7 @@ public enum LibraryStaircase
 		this.toLevel = toLevel;
 	}
 
-	public int direction()
+	int direction()
 	{
 		return Math.min(Math.max((toLevel.getPlane() - fromLevel.getPlane()), -1), 1);
 	}

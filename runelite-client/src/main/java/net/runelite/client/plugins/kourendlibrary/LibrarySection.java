@@ -29,7 +29,7 @@ import net.runelite.api.coords.WorldPoint;
 
 import javax.annotation.Nonnull;
 
-public enum LibrarySection
+enum LibrarySection
 {
 	NORTH_WEST("Northwest"),
 	NORTH_EAST("Northeast"),
@@ -45,7 +45,7 @@ public enum LibrarySection
 	}
 
 	@Nonnull
-	public static LibrarySection getSection(@Nonnull WorldPoint location)
+	static LibrarySection getSection(@Nonnull WorldPoint location)
 	{
 		boolean north;
 		boolean west;

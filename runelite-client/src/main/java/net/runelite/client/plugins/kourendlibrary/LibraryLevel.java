@@ -32,7 +32,7 @@ import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Comparator;
 
-public enum LibraryLevel
+enum LibraryLevel
 {
 	GROUND_FLOOR("ground floor"),
 	MIDDLE_FLOOR("middle floor"),
@@ -46,7 +46,7 @@ public enum LibraryLevel
 		this.name = name;
 	}
 
-	public boolean canReachOtherSections()
+	boolean canReachOtherSections()
 	{
 		switch (this)
 		{
@@ -61,7 +61,7 @@ public enum LibraryLevel
 		return false;
 	}
 
-	public int getPlane()
+	int getPlane()
 	{
 		switch (this)
 		{
@@ -77,7 +77,7 @@ public enum LibraryLevel
 	}
 
 	@Nullable
-	public static LibraryLevel getLevel(@Nonnull WorldPoint location)
+	static LibraryLevel getLevel(@Nonnull WorldPoint location)
 	{
 		switch (location.getPlane())
 		{
@@ -93,7 +93,7 @@ public enum LibraryLevel
 	}
 
 	@Nullable
-	public static LibraryLevel maxLevel()
+	static LibraryLevel maxLevel()
 	{
 		return Arrays.stream(values())
 			.max(Comparator.comparingInt(LibraryLevel::getPlane))
@@ -101,7 +101,7 @@ public enum LibraryLevel
 	}
 
 	@Nullable
-	public static LibraryLevel minLevel()
+	static LibraryLevel minLevel()
 	{
 		return Arrays.stream(values())
 			.min(Comparator.comparingInt(LibraryLevel::getPlane))

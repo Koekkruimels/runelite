@@ -40,7 +40,7 @@ import java.util.Comparator;
 
 @Singleton
 @Slf4j
-public class LibraryHintArrow
+class LibraryHintArrow
 {
 	@Inject
 	private KourendLibraryConfig config;
@@ -53,7 +53,7 @@ public class LibraryHintArrow
 
 	private boolean isShowingHintArrow = false;
 
-	public void update()
+	void update()
 	{
 		if (!config.showHintArray())
 		{
@@ -84,7 +84,7 @@ public class LibraryHintArrow
 		show(book);
 	}
 
-	public void clear()
+	void clear()
 	{
 		if (!isShowingHintArrow)
 		{

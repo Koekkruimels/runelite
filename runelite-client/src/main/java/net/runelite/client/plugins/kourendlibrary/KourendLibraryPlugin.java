@@ -59,8 +59,8 @@ public class KourendLibraryPlugin extends Plugin
 	private static final Pattern BOOK_EXTRACTOR = Pattern.compile("'<col=0000ff>(.*)</col>'");
 	private static final Pattern TAG_MATCHER = Pattern.compile("(<[^>]*>)");
 
-	public final static int REGION = 6459;
-	public final static boolean debug = false;
+	final static int REGION = 6459;
+	final static boolean debug = false;
 
 	@Inject
 	private ClientToolbar clientToolbar;
