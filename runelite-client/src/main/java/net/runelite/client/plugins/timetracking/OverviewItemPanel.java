@@ -31,6 +31,7 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import javax.annotation.Nonnull;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -42,29 +43,54 @@ import net.runelite.client.util.ImageUtil;
 
 class OverviewItemPanel extends JPanel
 {
+	interface Selectable
+	{
+		void onSelected();
+	}
+
+	interface IsSelectable
+	{
+		boolean isSelectable();
+	}
+
 	private static final ImageIcon ARROW_RIGHT_ICON;
 
 	private static final Color HOVER_COLOR = ColorScheme.DARKER_GRAY_HOVER_COLOR;
 
+	private final JPanel textContainer;
 	private final JLabel statusLabel;
+	private final JLabel arrowLabel;
+
+	private final IsSelectable isSelectable;
+	private final Selectable selectable;
+
+	private boolean isHighlighted;
 
 	static
 	{
 		ARROW_RIGHT_ICON = new ImageIcon(ImageUtil.getResourceStreamFromClass(TimeTrackingPlugin.class, "/util/arrow_right.png"));
 	}
 
-	OverviewItemPanel(ItemManager itemManager, TimeTrackingPanel pluginPanel, Tab tab, String title)
+	OverviewItemPanel(@Nonnull ItemManager itemManager, @Nonnull TimeTrackingPanel pluginPanel, @Nonnull Tab tab, @Nonnull String title)
 	{
+		this(itemManager, () -> pluginPanel.switchTab(tab), () -> true, title, tab.getItemID());
+	}
+
+	OverviewItemPanel(@Nonnull ItemManager itemManager, @Nonnull Selectable selectable, @Nonnull IsSelectable isSelectable, @Nonnull String title, int iconItemID)
+	{
+		this.selectable = selectable;
+		this.isSelectable = isSelectable;
+
 		setBackground(ColorScheme.DARKER_GRAY_COLOR);
 		setLayout(new BorderLayout());
 		setBorder(new EmptyBorder(7, 7, 7, 7));
 
 		JLabel iconLabel = new JLabel();
 		iconLabel.setMinimumSize(new Dimension(36, 32));
-		itemManager.getImage(tab.getItemID()).addTo(iconLabel);
+		itemManager.getImage(iconItemID).addTo(iconLabel);
 		add(iconLabel, BorderLayout.WEST);
 
-		JPanel textContainer = new JPanel();
+		textContainer = new JPanel();
 		textContainer.setBackground(ColorScheme.DARKER_GRAY_COLOR);
 		textContainer.setLayout(new GridLayout(2, 1));
 		textContainer.setBorder(new EmptyBorder(5, 7, 5, 7));
@@ -74,32 +100,27 @@ class OverviewItemPanel extends JPanel
 			@Override
 			public void mousePressed(MouseEvent mouseEvent)
 			{
-				pluginPanel.switchTab(tab);
-				setBackground(ColorScheme.DARKER_GRAY_COLOR);
-				textContainer.setBackground(ColorScheme.DARKER_GRAY_COLOR);
+				selectable.onSelected();
+
+				setHighlighted(false);
 			}
 
 			@Override
 			public void mouseReleased(MouseEvent e)
 			{
-				setBackground(HOVER_COLOR);
-				textContainer.setBackground(HOVER_COLOR);
+				setHighlighted(true);
 			}
 
 			@Override
 			public void mouseEntered(MouseEvent e)
 			{
-				setBackground(HOVER_COLOR);
-				textContainer.setBackground(HOVER_COLOR);
-				setCursor(new Cursor(Cursor.HAND_CURSOR));
+				setHighlighted(true);
 			}
 
 			@Override
 			public void mouseExited(MouseEvent e)
 			{
-				setBackground(ColorScheme.DARKER_GRAY_COLOR);
-				textContainer.setBackground(ColorScheme.DARKER_GRAY_COLOR);
-				setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+				setHighlighted(false);
 			}
 		});
 
@@ -116,7 +137,8 @@ class OverviewItemPanel extends JPanel
 
 		add(textContainer, BorderLayout.CENTER);
 
-		JLabel arrowLabel = new JLabel(ARROW_RIGHT_ICON);
+		arrowLabel = new JLabel(ARROW_RIGHT_ICON);
+		arrowLabel.setVisible(isSelectable.isSelectable());
 		add(arrowLabel, BorderLayout.EAST);
 	}
 
@@ -124,5 +146,28 @@ class OverviewItemPanel extends JPanel
 	{
 		statusLabel.setText(text);
 		statusLabel.setForeground(color);
+
+		boolean isSelectable = this.isSelectable.isSelectable();
+
+		arrowLabel.setVisible(isSelectable);
+
+		if (isHighlighted && !isSelectable)
+		{
+			setHighlighted(false);
+		}
+	}
+
+	private void setHighlighted(boolean highlighted)
+	{
+		if (highlighted && !isSelectable.isSelectable())
+		{
+			return;
+		}
+
+		setBackground(highlighted ? HOVER_COLOR : ColorScheme.DARKER_GRAY_COLOR);
+		setCursor(new Cursor(highlighted && getMousePosition(true) != null ? Cursor.HAND_CURSOR : Cursor.DEFAULT_CURSOR));
+		textContainer.setBackground(highlighted ? HOVER_COLOR : ColorScheme.DARKER_GRAY_COLOR);
+
+		isHighlighted = highlighted;
 	}
 }

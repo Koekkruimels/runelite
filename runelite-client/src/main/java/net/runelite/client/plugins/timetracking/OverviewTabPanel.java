@@ -31,9 +31,12 @@ import java.time.Instant;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Stream;
+import net.runelite.api.ItemID;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.plugins.timetracking.clocks.ClockManager;
+import net.runelite.client.plugins.timetracking.farmingcontract.FarmingContractManager;
 import net.runelite.client.plugins.timetracking.farming.FarmingTracker;
+import net.runelite.client.plugins.timetracking.farmingcontract.FarmingContractSummary;
 import net.runelite.client.plugins.timetracking.hunter.BirdHouseTracker;
 import net.runelite.client.ui.ColorScheme;
 
@@ -43,19 +46,23 @@ class OverviewTabPanel extends TabContentPanel
 	private final FarmingTracker farmingTracker;
 	private final BirdHouseTracker birdHouseTracker;
 	private final ClockManager clockManager;
+	private final FarmingContractManager farmingContractManager;
 
 	private final OverviewItemPanel timerOverview;
 	private final OverviewItemPanel stopwatchOverview;
 	private final Map<Tab, OverviewItemPanel> farmingOverviews;
 	private final OverviewItemPanel birdHouseOverview;
+	private final OverviewItemPanel farmingContractOverview;
 
 	OverviewTabPanel(ItemManager itemManager, TimeTrackingConfig config, TimeTrackingPanel pluginPanel,
-		FarmingTracker farmingTracker, BirdHouseTracker birdHouseTracker, ClockManager clockManager)
+					 FarmingTracker farmingTracker, BirdHouseTracker birdHouseTracker, ClockManager clockManager,
+					 FarmingContractManager farmingContractManager)
 	{
 		this.config = config;
 		this.farmingTracker = farmingTracker;
 		this.birdHouseTracker = birdHouseTracker;
 		this.clockManager = clockManager;
+		this.farmingContractManager = farmingContractManager;
 
 		setLayout(new GridLayout(0, 1, 0, 8));
 		setBackground(ColorScheme.DARK_GRAY_COLOR);
@@ -65,6 +72,9 @@ class OverviewTabPanel extends TabContentPanel
 
 		stopwatchOverview = new OverviewItemPanel(itemManager, pluginPanel, Tab.CLOCK, "Stopwatches");
 		add(stopwatchOverview);
+
+		farmingContractOverview = new OverviewItemPanel(itemManager, () -> pluginPanel.switchTab(farmingContractManager.getContractTab()), farmingContractManager::hasContract, "Farming Contract", ItemID.SEED_PACK);
+		add(farmingContractOverview);
 
 		birdHouseOverview = new OverviewItemPanel(itemManager, pluginPanel, Tab.BIRD_HOUSE, "Bird Houses");
 		add(birdHouseOverview);
@@ -116,6 +126,10 @@ class OverviewTabPanel extends TabContentPanel
 			updateItemPanel(panel, farmingTracker.getSummary(patchType), farmingTracker.getCompletionTime(patchType)));
 
 		updateItemPanel(birdHouseOverview, birdHouseTracker.getSummary(), birdHouseTracker.getCompletionTime());
+
+		FarmingContractSummary farmingContractSummary = farmingContractManager.getSummary();
+
+		farmingContractOverview.updateStatus(farmingContractSummary.getText(), farmingContractSummary.getColor());
 	}
 
 	private void updateItemPanel(OverviewItemPanel panel, SummaryState summary, long completionTime)
@@ -133,7 +147,7 @@ class OverviewTabPanel extends TabContentPanel
 				}
 				else
 				{
-					panel.updateStatus("Ready " + getFormattedEstimate(duration, config.estimateRelative()), Color.GRAY);
+					panel.updateStatus("Ready " + StatusEstimateFormatter.getFormattedEstimate(duration, config.estimateRelative()), Color.GRAY);
 				}
 
 				break;
