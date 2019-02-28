@@ -45,6 +45,7 @@ public class TimeablePanel<T> extends JPanel
 	private final JLabel icon = new JLabel();
 	private final JLabel estimate = new JLabel();
 	private final ThinProgressBar progress = new ThinProgressBar();
+	private final JLabel text;
 
 	public TimeablePanel(T timeable, String title, int maximumProgressValue)
 	{
@@ -65,14 +66,14 @@ public class TimeablePanel<T> extends JPanel
 		infoPanel.setLayout(new GridLayout(2, 1));
 		infoPanel.setBorder(new EmptyBorder(4, 4, 4, 0));
 
-		final JLabel location = new JShadowedLabel(title);
-		location.setFont(FontManager.getRunescapeSmallFont());
-		location.setForeground(Color.WHITE);
+		text = new JShadowedLabel(title);
+		text.setFont(FontManager.getRunescapeSmallFont());
+		text.setForeground(Color.WHITE);
 
 		estimate.setFont(FontManager.getRunescapeSmallFont());
 		estimate.setForeground(Color.GRAY);
 
-		infoPanel.add(location);
+		infoPanel.add(text);
 		infoPanel.add(estimate);
 
 		topContainer.add(icon, BorderLayout.WEST);

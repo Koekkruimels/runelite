@@ -91,11 +91,11 @@ public enum Produce
 	ANYHERB("Any herb", ItemID.GUAM_LEAF, 20, 5, 0, 3),
 
 	// Tree crops
-	OAK("Oak", ItemID.OAK_LOGS, 40, 5),
-	WILLOW("Willow", ItemID.WILLOW_LOGS, 40, 7),
+	OAK("Oak", ItemID.OAK_TREE, 40, 5),
+	WILLOW("Willow", ItemID.WILLOW_TREE, 40, 7),
 	MAPLE("Maple", ItemID.MAPLE_TREE, 40, 9),
 	YEW("Yew", ItemID.YEW_TREE, 40, 11),
-	MAGIC("Magic", ItemID.MAGIC_LOGS, 40, 13),
+	MAGIC("Magic", ItemID.MAGIC_TREE, 40, 13),
 
 	// Fruit tree crops
 	APPLE("Apple", ItemID.COOKING_APPLE, 160, 7, 45, 7),
