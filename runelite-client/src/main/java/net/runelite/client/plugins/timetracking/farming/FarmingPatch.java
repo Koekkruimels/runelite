@@ -34,7 +34,7 @@ import net.runelite.api.Varbits;
 	access = AccessLevel.PACKAGE
 )
 @Getter
-class FarmingPatch
+public class FarmingPatch
 {
 	@Setter(AccessLevel.PACKAGE)
 	private FarmingRegion region;

@@ -36,6 +36,7 @@ import javax.inject.Inject;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.coords.WorldPoint;
+import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.ConfigChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.UsernameChanged;
@@ -50,6 +51,7 @@ import static net.runelite.client.plugins.timetracking.TimeTrackingConfig.CONFIG
 import static net.runelite.client.plugins.timetracking.TimeTrackingConfig.STOPWATCHES;
 import static net.runelite.client.plugins.timetracking.TimeTrackingConfig.TIMERS;
 import net.runelite.client.plugins.timetracking.clocks.ClockManager;
+import net.runelite.client.plugins.timetracking.farmingcontract.FarmingContractManager;
 import net.runelite.client.plugins.timetracking.farming.FarmingTracker;
 import net.runelite.client.plugins.timetracking.hunter.BirdHouseTracker;
 import net.runelite.client.task.Schedule;
@@ -78,6 +80,9 @@ public class TimeTrackingPlugin extends Plugin
 
 	@Inject
 	private ClockManager clockManager;
+
+	@Inject
+	private FarmingContractManager farmingContractManager;
 
 	@Inject
 	private ItemManager itemManager;
@@ -113,7 +118,7 @@ public class TimeTrackingPlugin extends Plugin
 
 		final BufferedImage icon = ImageUtil.getResourceStreamFromClass(getClass(), "watch.png");
 
-		panel = new TimeTrackingPanel(itemManager, config, farmingTracker, birdHouseTracker, clockManager);
+		panel = new TimeTrackingPanel(itemManager, config, farmingTracker, birdHouseTracker, clockManager, farmingContractManager);
 
 		navButton = NavigationButton.builder()
 			.tooltip("Time Tracking")
@@ -169,6 +174,8 @@ public class TimeTrackingPlugin extends Plugin
 			return;
 		}
 
+		farmingContractManager.onGameTick();
+
 		// bird house data is only sent after exiting the post-login screen
 		Widget motd = client.getWidget(WidgetInfo.LOGIN_CLICK_TO_PLAY_SCREEN_MESSAGE_OF_THE_DAY);
 		if (motd != null && !motd.isHidden())
@@ -201,10 +208,17 @@ public class TimeTrackingPlugin extends Plugin
 	}
 
 	@Subscribe
+	public void onChatMessage(ChatMessage e)
+	{
+		farmingContractManager.onChatMessage(e);
+	}
+
+	@Subscribe
 	public void onUsernameChanged(UsernameChanged e)
 	{
 		farmingTracker.loadCompletionTimes();
 		birdHouseTracker.loadFromConfig();
+		farmingContractManager.onUsernameChanged();
 		panel.update();
 	}
 

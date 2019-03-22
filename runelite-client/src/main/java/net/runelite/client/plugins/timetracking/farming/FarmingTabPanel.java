@@ -26,6 +26,7 @@
 package net.runelite.client.plugins.timetracking.farming;
 
 import com.google.common.base.Strings;
+import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.time.Instant;
@@ -36,9 +37,11 @@ import javax.swing.JLabel;
 import javax.swing.border.EmptyBorder;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.client.game.ItemManager;
+import net.runelite.client.plugins.timetracking.StatusEstimateFormatter;
 import net.runelite.client.plugins.timetracking.TabContentPanel;
 import net.runelite.client.plugins.timetracking.TimeTrackingConfig;
 import net.runelite.client.plugins.timetracking.TimeablePanel;
+import net.runelite.client.plugins.timetracking.farmingcontract.FarmingContractManager;
 import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.ui.FontManager;
 
@@ -49,18 +52,21 @@ public class FarmingTabPanel extends TabContentPanel
 	private final ItemManager itemManager;
 	private final TimeTrackingConfig config;
 	private final List<TimeablePanel<FarmingPatch>> patchPanels;
+	private final FarmingContractManager farmingContractManager;
 
 	FarmingTabPanel(
 		FarmingTracker farmingTracker,
 		ItemManager itemManager,
 		TimeTrackingConfig config,
-		Set<FarmingPatch> patches
+		Set<FarmingPatch> patches,
+		FarmingContractManager manager
 	)
 	{
 		this.farmingTracker = farmingTracker;
 		this.itemManager = itemManager;
 		this.config = config;
 		this.patchPanels = new ArrayList<>();
+		this.farmingContractManager = manager;
 
 		setLayout(new GridBagLayout());
 		setBackground(ColorScheme.DARK_GRAY_COLOR);
@@ -166,7 +172,7 @@ public class FarmingTabPanel extends TabContentPanel
 						}
 						else
 						{
-							panel.getEstimate().setText("Done " + getFormattedEstimate(prediction.getDoneEstimate() - unixNow, config.estimateRelative()));
+							panel.getEstimate().setText("Done " + StatusEstimateFormatter.getFormattedEstimate(prediction.getDoneEstimate() - unixNow, config.estimateRelative()));
 						}
 						break;
 					case DISEASED:
@@ -188,6 +194,15 @@ public class FarmingTabPanel extends TabContentPanel
 				else
 				{
 					panel.getProgress().setVisible(false);
+				}
+
+				if (farmingContractManager.shouldHighlightFarmingTabPanel(patch))
+				{
+					panel.getText().setForeground(new Color(130, 80, 175));
+				}
+				else
+				{
+					panel.getText().setForeground(Color.WHITE);
 				}
 			}
 		}

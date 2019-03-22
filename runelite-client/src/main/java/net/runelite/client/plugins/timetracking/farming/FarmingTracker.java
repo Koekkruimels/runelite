@@ -40,6 +40,7 @@ import net.runelite.client.game.ItemManager;
 import net.runelite.client.plugins.timetracking.SummaryState;
 import net.runelite.client.plugins.timetracking.Tab;
 import net.runelite.client.plugins.timetracking.TimeTrackingConfig;
+import net.runelite.client.plugins.timetracking.farmingcontract.FarmingContractManager;
 
 @Singleton
 public class FarmingTracker
@@ -60,7 +61,7 @@ public class FarmingTracker
 
 	@Inject
 	private FarmingTracker(Client client, ItemManager itemManager, ConfigManager configManager,
-		TimeTrackingConfig config, FarmingWorld farmingWorld)
+						   TimeTrackingConfig config, FarmingWorld farmingWorld)
 	{
 		this.client = client;
 		this.itemManager = itemManager;
@@ -70,9 +71,9 @@ public class FarmingTracker
 	}
 
 
-	public FarmingTabPanel createTabPanel(Tab tab)
+	public FarmingTabPanel createTabPanel(Tab tab, FarmingContractManager farmingContractManager)
 	{
-		return new FarmingTabPanel(this, itemManager, config, farmingWorld.getTabs().get(tab));
+		return new FarmingTabPanel(this, itemManager, config, farmingWorld.getTabs().get(tab), farmingContractManager);
 	}
 
 	/**
